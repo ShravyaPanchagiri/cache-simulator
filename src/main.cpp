@@ -3,6 +3,8 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <cstdint>
+#include <stdexcept>
 
 // Represents a mock memory page frame managed by the OS architecture
 class PageFrame {
@@ -12,31 +14,33 @@ public:
 
 	PageFrame(uint32_t id, std::string payload)
 		: pageId(id), data(std::move(payload)) {
-			std::cout << "[Allocated] Page Frame " << pageId << "initialized in heap.\n";	
+			std::cout << "[Allocated] Page Frame " << pageId << " initialized in heap.\n";	
 		}
 
 		~PageFrame() {
-			std::cout << "[Deallocated] page Frame " << pageId << " safely freed from memory.\n";
+			std::cout << "[Deallocated] Page Frame " << pageId << " safely freed from memory.\n";
 		}
 };
 
 //High-performance User-space Page Cache Manager Engine
 
-class PageChacheManager {
+class PageCacheManager {
 private:
 	size_t maxCapacity;
 
-	// Explicitly tracks ownership pf page objects via smart pointers
+	// Explicitly tracks ownership of page objects via smart pointers
 	using PagePtr = std::unique_ptr<PageFrame>;
 
 	// Doubly-linked list to track structural recency (Front = MRU, Back = LRU)
 	std::list<uint32_t> lrulist;
 
-	// O(1) Lookup engine piring Page ID to its location in the list and its underlying data block
+	// O(1) Lookup engine pairing Page ID to its location in the list and its underlying data block
 	std::unordered_map<uint32_t, std::pair<std::list<uint32_t>::iterator, PagePtr>> cacheMap;
 
 public:
-	explicit PageChacheManager(size_t capacity) : maxCapacity(capacity) {}
+	explicit PageCacheManager(size_t capacity) : maxCapacity(capacity) {
+		if(capacity == 0) throw std::invalid_argument("capacity must be >= 1");
+	}
 
 	// Simulates reading or writing a target page block from a hardware register interface
 	void accessPage(uint32_t pageId, const std::string& fallbackPayload) {
@@ -45,8 +49,9 @@ public:
 		// Cache Hit path execution
 		if(it != cacheMap.end()) {
 			std::cout << " -> Cache HIT for Page ID: " << pageId << "\n";
-			lrulist.erase(it->second.first);
-			lrulist.push_front(pageId);
+			//lrulist.erase(it->second.first);
+			//lrulist.push_front(pageId);
+			lrulist.splice(lrulist.begin(), lrulist,it->second.first);
 			it->second.first = lrulist.begin();
 			return;
 		}
@@ -79,7 +84,7 @@ int main()
 
 
 	// Create a page cache that can only hold a maximum of 2 pages concurrently
-	PageChacheManager systemCache(2);
+	PageCacheManager systemCache(2);
 
 	systemCache.accessPage(101, "Kernel_Init_Data");
 	systemCache.accessPage(102, "Interrupt_Vector_Table");
