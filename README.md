@@ -31,9 +31,9 @@ make clean
 ```
 
 # Telemetry Tests
-=====================================================
+===============================================
   Initializing High-Performance C++ Page Cache Simulator
-=====================================================
+===============================================
 
 -> Cache Miss for Page ID: 101. Fetching resource...
 [Allocated] Page Frame 101 initialized in heap.
@@ -45,9 +45,9 @@ make clean
 [Deallocated] Page Frame 102 safely freed from memory.
 [Allocated] Page Frame 103 initialized in heap.
 
-========================================================
+==============================================
  Shutting down simulator (Cleaning up memory scopes)
-========================================================
+==============================================
 [Deallocated] Page Frame 103 safely freed from memory.
 [Deallocated] Page Frame 101 safely freed from memory.
 
