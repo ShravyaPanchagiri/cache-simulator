@@ -31,9 +31,9 @@ make clean
 ```
 
 # Telemetry Tests
-===============================================
+==============================================
   Initializing High-Performance C++ Page Cache Simulator
-===============================================
+==============================================
 
 -> Cache Miss for Page ID: 101. Fetching resource...
 [Allocated] Page Frame 101 initialized in heap.
